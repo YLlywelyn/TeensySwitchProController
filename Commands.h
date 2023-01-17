@@ -10,9 +10,10 @@ static const command step[] = {
 	{ TRIGGERS,   5 },
 	{ NOTHING,  150 },
 	{ A,          5 },
-	{ NOTHING,  250 }
+	{ NOTHING,  250 },
 
-
+	{ A, 250 },
+	{ NOTHING, 250 }
 };
 
 #endif
