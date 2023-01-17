@@ -21,18 +21,29 @@ these buttons for our use.
 #include "Joystick.h"
 
 typedef enum {
+	NOTHING,
 	UP,
 	DOWN,
 	LEFT,
 	RIGHT,
-	X,
-	Y,
+	LS_UP,
+	LS_DOWN,
+	LS_LEFT,
+	LS_RIGHT,
+	RS_UP,
+	RS_DOWN,
+	RS_LEFT,
+	RS_RIGHT,
 	A,
 	B,
+	X,
+	Y,
 	L,
 	R,
-	THROW,
-	NOTHING,
+	ZL,
+	ZR,
+	PLUS,
+	MINUS,
 	TRIGGERS
 } Buttons_t;
 
@@ -41,150 +52,7 @@ typedef struct {
 	uint16_t duration;
 } command; 
 
-static const command step[] = {
-	// Setup controller
-	{ NOTHING,  250 },
-	{ TRIGGERS,   5 },
-	{ NOTHING,  150 },
-	{ TRIGGERS,   5 },
-	{ NOTHING,  150 },
-	{ A,          5 },
-	{ NOTHING,  250 },
-
-	// Talk to Pondo
-	{ A,          5 }, // Start
-	{ NOTHING,   30 },
-	{ B,          5 }, // Quick output of text
-	{ NOTHING,   20 }, // Halloo, kiddums!
-	{ A,          5 }, // <- I'll try it!
-	{ NOTHING,   15 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ A,          5 }, // <- OK!
-	{ NOTHING,   15 },
-	{ B,          5 },
-	{ NOTHING,   20 }, // Aha! Play bells are ringing! I gotta set up the pins, but I'll be back in a flurry
-	{ A,          5 }, // <Continue>
-	{ NOTHING,  325 }, // Cut to different scene (Knock 'em flat!)
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ A,          5 }, // <Continue> // Camera transition takes place after this
-	{ NOTHING,   50 },
-	{ B,          5 },
-	{ NOTHING,   20 }, // If you can knock over all 10 pins in one roll, that's a strike
-	{ A,          5 }, // <Continue>
-	{ NOTHING,   15 },
-	{ B,          5 },
-	{ NOTHING,   20 }, // A spare is...
-	{ A,          5 }, // <Continue>
-	{ NOTHING,  100 }, // Well, good luck
-	{ A,          5 }, // <Continue>
-	{ NOTHING,  150 }, // Pondo walks away
-
-	// Pick up Snowball (Or alternatively, run to bail in case of a non-strike)
-	{ A,          5 },
-	{ NOTHING,   50 },
-	{ LEFT,      42 },
-	{ UP,        80 },
-	{ THROW,     25 },
-
-	// Non-strike alternative flow, cancel bail and rethrow
-	{ NOTHING,   30 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 }, // I have to split dialogue (It's nothing)
-	{ NOTHING,   15 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,  450 },
-	{ B,          5 }, // Snowly moly... there are rules!
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 }, // Second dialogue
-	{ NOTHING,   20 },
-	{ DOWN,      10 }, // Return to snowball
-	{ NOTHING,   20 },
-	{ A,          5 }, // Pick up snowball, we just aimlessly throw it
-	{ NOTHING,   50 },
-	{ UP,        10 },
-	{ THROW,     25 },
-
-	// Back at main flow
-	{ NOTHING,  175 }, // Ater throw wait
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 }, // To the rewards
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	
-	{ B,          5 }, // Wait for 450 cycles by bashing B (Like real players do!)
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 },
-	{ B,          5 },
-	{ NOTHING,   20 } // Saving, intermission
-};
+#include "Commands.h"
 
 // Main entry point.
 int main(void) {
@@ -393,44 +261,86 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 
 			switch (step[bufindex].button)
 			{
-
+				// DPAD
 				case UP:
+					ReportData->HAT = HAT_TOP;
+					break;
+				case DOWN:
+					ReportData->HAT = HAT_BOTTOM;
+					break;
+				case LEFT:
+					ReportData->HAT = HAT_LEFT;
+					break;
+				case RIGHT:
+					ReportData->HAT = HAT_RIGHT;
+					break;
+
+				// LEFT STICK
+				case LS_UP:
 					ReportData->LY = STICK_MIN;				
 					break;
-
-				case LEFT:
+				case LS_LEFT:
 					ReportData->LX = STICK_MIN;				
 					break;
-
-				case DOWN:
+				case LS_DOWN:
 					ReportData->LY = STICK_MAX;				
 					break;
-
-				case RIGHT:
+				case LS_RIGHT:
 					ReportData->LX = STICK_MAX;				
 					break;
 
+				// RIGHT STICK
+				case RS_UP:
+					ReportData->RY = STICK_MIN;				
+					break;
+				case RS_LEFT:
+					ReportData->RX = STICK_MIN;				
+					break;
+				case RS_DOWN:
+					ReportData->RY = STICK_MAX;				
+					break;
+				case RS_RIGHT:
+					ReportData->RX = STICK_MAX;				
+					break;
+
+				// FACE BUTTONS
 				case A:
 					ReportData->Button |= SWITCH_A;
 					break;
-
 				case B:
 					ReportData->Button |= SWITCH_B;
 					break;
-
+				case X:
+					ReportData->Button |= SWITCH_X;
+					break;
+				case Y:
+					ReportData->Button |= SWITCH_Y;
+					break;
+				case PLUS:
+					ReportData->Button |= SWITCH_PLUS;
+					break;
+				case MINUS:
+					ReportData->Button |= SWITCH_MINUS;
+					break;
+				
+				// TRIGGERS AND SHOULDERS
+				case L:
+					ReportData->Button |= SWITCH_L;
+					break;
 				case R:
 					ReportData->Button |= SWITCH_R;
 					break;
-
-				case THROW:
-					ReportData->LY = STICK_MIN;				
-					ReportData->Button |= SWITCH_R;
+				case ZL:
+					ReportData->Button |= SWITCH_ZL;
 					break;
-
+				case ZR:
+					ReportData->Button |= SWITCH_ZR;
+					break;
 				case TRIGGERS:
 					ReportData->Button |= SWITCH_L | SWITCH_R;
 					break;
 
+				// NO BUTTONS
 				default:
 					ReportData->LX = STICK_CENTER;
 					ReportData->LY = STICK_CENTER;
