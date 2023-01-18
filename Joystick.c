@@ -26,14 +26,20 @@ typedef enum {
 	DOWN,
 	LEFT,
 	RIGHT,
+	UP_LEFT,
+	UP_RIGHT,
+	DOWN_LEFT,
+	DOWN_RIGHT,
 	LS_UP,
 	LS_DOWN,
 	LS_LEFT,
 	LS_RIGHT,
+	LS_CLICK,
 	RS_UP,
 	RS_DOWN,
 	RS_LEFT,
 	RS_RIGHT,
+	RS_CLICK,
 	A,
 	B,
 	X,
@@ -265,8 +271,20 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 				case UP:
 					ReportData->HAT = HAT_TOP;
 					break;
+				case UP_LEFT:
+					ReportData->HAT = HAT_TOP_LEFT;
+					break;
+				case UP_RIGHT:
+					ReportData->HAT = HAT_TOP_RIGHT;
+					break;
 				case DOWN:
 					ReportData->HAT = HAT_BOTTOM;
+					break;
+				case DOWN_LEFT:
+					ReportData->HAT = HAT_BOTTOM_LEFT;
+					break;
+				case DOWN_RIGHT:
+					ReportData->HAT = HAT_BOTTOM_RIGHT;
 					break;
 				case LEFT:
 					ReportData->HAT = HAT_LEFT;
@@ -288,6 +306,9 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 				case LS_RIGHT:
 					ReportData->LX = STICK_MAX;				
 					break;
+				case LS_CLICK:
+					ReportData->Button |= SWITCH_LCLICK;
+					break;
 
 				// RIGHT STICK
 				case RS_UP:
@@ -301,6 +322,9 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 					break;
 				case RS_RIGHT:
 					ReportData->RX = STICK_MAX;				
+					break;
+				case RS_CLICK:
+					ReportData->Button |= SWITCH_RCLICK;
 					break;
 
 				// FACE BUTTONS

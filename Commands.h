@@ -12,8 +12,8 @@ static const command step[] = {
 	{ A,          5 },
 	{ NOTHING,  250 },
 
-	{ A, 250 },
-	{ NOTHING, 250 }
+	{ A,        100 },
+	{ NOTHING,  100 }
 };
 
 #endif
