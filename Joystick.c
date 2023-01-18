@@ -56,7 +56,12 @@ typedef enum {
 typedef struct {
 	Buttons_t button;
 	uint16_t duration;
-} command; 
+} command;
+
+typedef struct {
+	bool repeats;
+	command commands;
+} command_set;
 
 #include "Commands.h"
 
