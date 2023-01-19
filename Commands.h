@@ -23,4 +23,26 @@ static const command_set Spam_A = {
 	}
 };
 
+#define RELEASE_POKEMON_MACRO // Select Pokemon\
+		{ NOTHING,  150 },\
+		{ A,          5 },\
+		// Select 'Release'\
+		{ NOTHING,  150 },\
+		{ UP,         5 },\
+		{ NOTHING,  150 },\
+		{ UP,         5 },\
+		{ NOTHING,  150 },\
+		{ A,          5 },\
+		// Are we sure?\
+		{ NOTHING,  150 },\
+		{ UP,         5 },\
+		{ NOTHING,  150 },\
+		{ A,          5 }
+static const command_set Release_Entire_Box = {
+	false, //Repeat
+	{
+		RELEASE_POKEMON_MACRO
+	}
+}
+
 #endif
