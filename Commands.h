@@ -41,7 +41,9 @@ static const command_set Spam_A = {
 static const command_set Release_Entire_Box = {
 	false, //Repeat
 	{
-		RELEASE_POKEMON_MACRO
+		RELEASE_POKEMON_MACRO,
+		{ NOTHING,  150 },
+		{ RIGHT,      5 }
 	}
 }
 

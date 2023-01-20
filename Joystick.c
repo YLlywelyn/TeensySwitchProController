@@ -91,16 +91,6 @@ void SetupHardware(void) {
 	clock_prescale_set(clock_div_1);
 	// We can then initialize our hardware and peripherals, including the USB stack.
 
-	#ifdef ALERT_WHEN_DONE
-	// Both PORTD and PORTB will be used for the optional LED flashing and buzzer.
-	#warning LED and Buzzer functionality enabled. All pins on both PORTB and \
-PORTD will toggle when printing is done.
-	DDRD  = 0xFF; //Teensy uses PORTD
-	PORTD =  0x0;
-                  //We'll just flash all pins on both ports since the UNO R3
-	DDRB  = 0xFF; //uses PORTB. Micro can use either or, but both give us 2 LEDs
-	PORTB =  0x0; //The ATmega328P on the UNO will be resetting, so unplug it?
-	#endif
 	// The USB stack should be initialized last.
 	USB_Init();
 }
@@ -177,7 +167,6 @@ void HID_Task(void) {
 
 typedef enum {
 	SYNC_CONTROLLER,
-	SYNC_POSITION,
 	BREATHE,
 	PROCESS,
 	CLEANUP,
@@ -223,48 +212,8 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 			state = BREATHE;
 			break;
 
-		// case SYNC_CONTROLLER:
-		// 	if (report_count > 550)
-		// 	{
-		// 		report_count = 0;
-		// 		state = SYNC_POSITION;
-		// 	}
-		// 	else if (report_count == 250 || report_count == 300 || report_count == 325)
-		// 	{
-		// 		ReportData->Button |= SWITCH_L | SWITCH_R;
-		// 	}
-		// 	else if (report_count == 350 || report_count == 375 || report_count == 400)
-		// 	{
-		// 		ReportData->Button |= SWITCH_A;
-		// 	}
-		// 	else
-		// 	{
-		// 		ReportData->Button = 0;
-		// 		ReportData->LX = STICK_CENTER;
-		// 		ReportData->LY = STICK_CENTER;
-		// 		ReportData->RX = STICK_CENTER;
-		// 		ReportData->RY = STICK_CENTER;
-		// 		ReportData->HAT = HAT_CENTER;
-		// 	}
-		// 	report_count++;
-		// 	break;
-
-		case SYNC_POSITION:
-			bufindex = 0;
-
-
-			ReportData->Button = 0;
-			ReportData->LX = STICK_CENTER;
-			ReportData->LY = STICK_CENTER;
-			ReportData->RX = STICK_CENTER;
-			ReportData->RY = STICK_CENTER;
-			ReportData->HAT = HAT_CENTER;
-
-
-			state = BREATHE;
-			break;
-
 		case BREATHE:
+			// TODO: WAIT FOR NEW COMMAND SET TO BE SELECTED, THEN CHANGE STATE
 			state = PROCESS;
 			break;
 
@@ -390,13 +339,11 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 
 			if (bufindex > (int)( sizeof(step) / sizeof(step[0])) - 1)
 			{
+				
+				state = CLEANUP;
 
-				// state = CLEANUP;
-
-				bufindex = 7;
+				bufindex = 0;
 				duration_count = 0;
-
-				state = BREATHE;
 
 				ReportData->LX = STICK_CENTER;
 				ReportData->LY = STICK_CENTER;
@@ -404,32 +351,15 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 				ReportData->RY = STICK_CENTER;
 				ReportData->HAT = HAT_CENTER;
 
-
-				// state = DONE;
-//				state = BREATHE;
-
 			}
 
 			break;
 
 		case CLEANUP:
-			state = DONE;
+			// TODO: Unset current command set
+			state = BREATHE;
 			break;
-
-		case DONE:
-			#ifdef ALERT_WHEN_DONE
-			portsval = ~portsval;
-			PORTD = portsval; //flash LED(s) and sound buzzer if attached
-			PORTB = portsval;
-			_delay_ms(250);
-			#endif
-			return;
 	}
-
-	// // Inking
-	// if (state != SYNC_CONTROLLER && state != SYNC_POSITION)
-	// 	if (pgm_read_byte(&(image_data[(xpos / 8) + (ypos * 40)])) & 1 << (xpos % 8))
-	// 		ReportData->Button |= SWITCH_A;
 
 	// Prepare to echo this report
 	memcpy(&last_report, ReportData, sizeof(USB_JoystickReport_Input_t));
