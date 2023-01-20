@@ -166,24 +166,19 @@ void HID_Task(void) {
 }
 
 typedef enum {
-	SYNC_CONTROLLER,
 	BREATHE,
 	PROCESS,
-	CLEANUP,
-	DONE
+	CLEANUP
 } State_t;
-State_t state = SYNC_CONTROLLER;
+State_t state = BREATHE;
 
 #define ECHOES 2
 int echoes = 0;
 USB_JoystickReport_Input_t last_report;
 
-int report_count = 0;
-int xpos = 0;
-int ypos = 0;
 int bufindex = 0;
 int duration_count = 0;
-int portsval = 0;
+command_set current_command_set = NULL;
 
 // Prepare the next report for the host.
 void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
@@ -208,18 +203,16 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 	switch (state)
 	{
 
-		case SYNC_CONTROLLER:
-			state = BREATHE;
-			break;
-
 		case BREATHE:
-			// TODO: WAIT FOR NEW COMMAND SET TO BE SELECTED, THEN CHANGE STATE
-			state = PROCESS;
+			// If there is no selected command set, break
+			if (current_command_set == NULL) break;
+			// Otherwise, start processing it
+			else state = PROCESS;
 			break;
 
 		case PROCESS:
 
-			switch (step[bufindex].button)
+			switch (current_command_set.commands[bufindex].button)
 			{
 				// DPAD
 				case UP:
@@ -339,24 +332,21 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 
 			if (bufindex > (int)( sizeof(step) / sizeof(step[0])) - 1)
 			{
-				
-				state = CLEANUP;
-
-				bufindex = 0;
-				duration_count = 0;
-
-				ReportData->LX = STICK_CENTER;
-				ReportData->LY = STICK_CENTER;
-				ReportData->RX = STICK_CENTER;
-				ReportData->RY = STICK_CENTER;
-				ReportData->HAT = HAT_CENTER;
-
+				// If current command set does not repeat, go to cleanup
+				if (!current_command_set.repeats) state = CLEANUP;
+				else
+				{
+					bufindex = 0;
+					duration_count = 0;
+				}
 			}
 
 			break;
 
 		case CLEANUP:
-			// TODO: Unset current command set
+			bufindex = 0;
+			duration_count = 0;
+			current_command_set = NULL;
 			state = BREATHE;
 			break;
 	}
