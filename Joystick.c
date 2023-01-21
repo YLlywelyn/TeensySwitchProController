@@ -19,54 +19,17 @@ these buttons for our use.
 */
 
 #include "Joystick.h"
-
-typedef enum {
-	NOTHING,
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-	UP_LEFT,
-	UP_RIGHT,
-	DOWN_LEFT,
-	DOWN_RIGHT,
-	LS_UP,
-	LS_DOWN,
-	LS_LEFT,
-	LS_RIGHT,
-	LS_CLICK,
-	RS_UP,
-	RS_DOWN,
-	RS_LEFT,
-	RS_RIGHT,
-	RS_CLICK,
-	A,
-	B,
-	X,
-	Y,
-	L,
-	R,
-	ZL,
-	ZR,
-	PLUS,
-	MINUS,
-	TRIGGERS
-} Buttons_t;
-
-typedef struct {
-	Buttons_t button;
-	uint16_t duration;
-} command;
-
-typedef struct {
-	bool repeats;
-	command commands;
-} command_set;
-
 #include "Commands.h"
+
+#define BUTTON1PIN PINB0
+#define BUTTON2PIN PINB1
+
+command_set current_command_set;
 
 // Main entry point.
 int main(void) {
+	current_command_set = NULL_COMMAND_SET;
+
 	// We'll start by performing hardware and peripheral setup.
 	SetupHardware();
 	// We'll then enable global interrupts for our use.
@@ -91,8 +54,29 @@ void SetupHardware(void) {
 	clock_prescale_set(clock_div_1);
 	// We can then initialize our hardware and peripherals, including the USB stack.
 
+	// Setup input pins for buttons
+	DDRB &= ~(1 << BUTTON1PIN);
+	DDRB &= ~(1 << BUTTON2PIN);
+
 	// The USB stack should be initialized last.
 	USB_Init();
+}
+
+typedef enum {
+	Button1,
+	Button2
+} AVR_Buttons_t;
+bool GetAVRButtonState(AVR_Buttons_t button)
+{
+	switch (button)
+	{
+		case Button1:
+			return (PINB & (1 << BUTTON1PIN)) == 0;
+		case Button2:
+			return (PINB & (1 << BUTTON2PIN)) == 0;
+		default:
+			return false;
+	}
 }
 
 // Fired to indicate that the device is enumerating.
@@ -178,7 +162,6 @@ USB_JoystickReport_Input_t last_report;
 
 int bufindex = 0;
 int duration_count = 0;
-command_set current_command_set = NULL;
 
 // Prepare the next report for the host.
 void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
@@ -205,7 +188,7 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 
 		case BREATHE:
 			// If there is no selected command set, break
-			if (current_command_set == NULL) break;
+			if (CompareCommandSets(current_command_set, NULL_COMMAND_SET)) break;
 			// Otherwise, start processing it
 			else state = PROCESS;
 			break;
@@ -323,14 +306,14 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 
 			duration_count++;
 
-			if (duration_count > step[bufindex].duration)
+			if (duration_count > current_command_set.commands[bufindex].duration)
 			{
 				bufindex++;
 				duration_count = 0;				
 			}
 
 
-			if (bufindex > (int)( sizeof(step) / sizeof(step[0])) - 1)
+			if (bufindex >= current_command_set.command_count)
 			{
 				// If current command set does not repeat, go to cleanup
 				if (!current_command_set.repeats) state = CLEANUP;
@@ -346,7 +329,7 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 		case CLEANUP:
 			bufindex = 0;
 			duration_count = 0;
-			current_command_set = NULL;
+			current_command_set = NULL_COMMAND_SET;
 			state = BREATHE;
 			break;
 	}
