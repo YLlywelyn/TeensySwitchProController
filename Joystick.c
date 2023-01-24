@@ -163,6 +163,8 @@ USB_JoystickReport_Input_t last_report;
 int bufindex = 0;
 int duration_count = 0;
 
+bool breakCommand = false;
+
 // Prepare the next report for the host.
 void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 
@@ -322,6 +324,12 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 					bufindex = 0;
 					duration_count = 0;
 				}
+			}
+
+			if (breakCommand)
+			{
+				breakCommand = false;
+				state = CLEANUP;
 			}
 
 			break;
