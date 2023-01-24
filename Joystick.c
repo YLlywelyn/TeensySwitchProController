@@ -34,6 +34,8 @@ int main(void) {
 	SetupHardware();
 	// We'll then enable global interrupts for our use.
 	GlobalInterruptEnable();
+	// Setup the screen and buttons
+	SetupScreen();
 	// Once that's done, we'll enter an infinite loop.
 	for (;;)
 	{
@@ -41,7 +43,18 @@ int main(void) {
 		HID_Task();
 		// We also need to run the main USB management task.
 		USB_USBTask();
+		// Run the task for the screen/buttons
+		ScreenTask();
 	}
+}
+
+void SetupScreen()
+{
+	// Setup input pins for buttons
+	DDRB &= ~(1 << BUTTON1PIN);
+	DDRB &= ~(1 << BUTTON2PIN);
+
+	// TODO: Setup pins for the screen
 }
 
 // Configures hardware and peripherals, such as the USB peripherals.
@@ -53,10 +66,6 @@ void SetupHardware(void) {
 	// We need to disable clock division before initializing the USB hardware.
 	clock_prescale_set(clock_div_1);
 	// We can then initialize our hardware and peripherals, including the USB stack.
-
-	// Setup input pins for buttons
-	DDRB &= ~(1 << BUTTON1PIN);
-	DDRB &= ~(1 << BUTTON2PIN);
 
 	// The USB stack should be initialized last.
 	USB_Init();
@@ -105,6 +114,13 @@ void EVENT_USB_Device_ControlRequest(void) {
 	// We can handle two control requests: a GetReport and a SetReport.
 
 	// Not used here, it looks like we don't receive control request from the Switch.
+}
+
+void ScreenTask()
+{
+	// TODO: Update the screen based on the current state
+
+	// TODO: Check the buttons and react based on the current state
 }
 
 // Process and deliver data from IN and OUT endpoints.
