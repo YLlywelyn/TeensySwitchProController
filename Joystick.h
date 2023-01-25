@@ -120,4 +120,7 @@ void EVENT_USB_Device_ControlRequest(void);
 // Prepare the next report for the host.
 void GetNextReport(USB_JoystickReport_Input_t* const ReportData);
 
+void SetupScreen(void);
+void ScreenTask(void);
+
 #endif

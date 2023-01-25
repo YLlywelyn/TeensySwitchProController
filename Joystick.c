@@ -26,9 +26,16 @@ these buttons for our use.
 
 command_set current_command_set;
 
+typedef enum {
+	BREATHE,
+	PROCESS,
+	CLEANUP
+} State_t;
+State_t state = BREATHE;
+
 // Main entry point.
 int main(void) {
-	current_command_set = NULL_COMMAND_SET;
+	current_command_set = TEST_COMMANDS;
 
 	// We'll start by performing hardware and peripheral setup.
 	SetupHardware();
@@ -48,7 +55,7 @@ int main(void) {
 	}
 }
 
-void SetupScreen()
+void SetupScreen(void)
 {
 	// Setup input pins for buttons
 	DDRB &= ~(1 << BUTTON1PIN);
@@ -116,11 +123,22 @@ void EVENT_USB_Device_ControlRequest(void) {
 	// Not used here, it looks like we don't receive control request from the Switch.
 }
 
-void ScreenTask()
+void ScreenTask(void)
 {
 	// TODO: Update the screen based on the current state
-
 	// TODO: Check the buttons and react based on the current state
+
+	switch (state)
+	{
+		case BREATHE:
+			// TODO: Allow selection of a command set
+			break;
+		case PROCESS:
+			// TODO: Allow breaking of current command set
+			break;
+		default:
+			break;
+	}
 }
 
 // Process and deliver data from IN and OUT endpoints.
@@ -164,13 +182,6 @@ void HID_Task(void) {
 		Endpoint_ClearIN();
 	}
 }
-
-typedef enum {
-	BREATHE,
-	PROCESS,
-	CLEANUP
-} State_t;
-State_t state = BREATHE;
 
 #define ECHOES 2
 int echoes = 0;
@@ -310,6 +321,10 @@ void GetNextReport(USB_JoystickReport_Input_t* const ReportData) {
 					break;
 				case TRIGGERS:
 					ReportData->Button |= SWITCH_L | SWITCH_R;
+					break;
+				
+				case HOME:
+					ReportData->Button |= SWITCH_HOME;
 					break;
 
 				// NO BUTTONS
