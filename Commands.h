@@ -55,198 +55,38 @@ static const command_set NULL_COMMAND_SET = {
 	false, // Repeat
 	1, // Command count
 	{
-		{ NOTHING, 1 }
-	}
-};
-
-static const command_set TEST_COMMANDS = {
-	false,
-	72,
-	{
-		{ NOTHING,  500 },
-		{ TRIGGERS,   5 },
-		{ NOTHING,  150 },
-		{ TRIGGERS,   5 },
-		{ NOTHING,  150 },
-		{ TRIGGERS,   5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  500 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
+		{ NOTHING, 500 }
 	}
 };
 
 static const command_set Sync_Controller = {
 	false, // Repeat
-	7, // Command count
+	9, // Command count
 	{
+		{ A,          5 },
+		{ NOTHING,  500 },
+		{ TRIGGERS,   5 },
 		{ NOTHING,  250 },
 		{ TRIGGERS,   5 },
-		{ NOTHING,  150 },
+		{ NOTHING,  250 },
 		{ TRIGGERS,   5 },
-		{ NOTHING,  150 },
-		{ A,          5 },
-		{ NOTHING,  250 }
-	}
-};
-
-static const command_set Spam_A = {
-	true, //Repeat
-	2, // Command count
-	{
-		{ NOTHING,  150 },
+		{ NOTHING,  250 },
 		{ A,          5 }
 	}
 };
 
-#define RELEASE_POKEMON_MACRO\
-        { NOTHING,  150 },/*Select Pokemon*/\
-		{ A,          5 },\
-		{ NOTHING,  150 },/*Select 'Release'*/\
-		{ UP,         5 },\
-		{ NOTHING,  150 },\
-		{ UP,         5 },\
-		{ NOTHING,  150 },\
-		{ A,          5 },\
-		{ NOTHING,  150 },/*Are we sure?*/\
-		{ UP,         5 },\
-		{ NOTHING,  150 },\
-		{ A,          5 },\
-        { NOTHING,  150 }
-static const command_set Release_Entire_Box = {
-	false, //Repeat
-	419, // Command count
+static const command_set AntiAFK = {
+	true, // Repeat
+	8,
 	{
-		// First row
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-
-		// Second row
-		{ DOWN,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-
-		// Third row
-		{ DOWN,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-
-		// Forth row
-		{ DOWN,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ LEFT,       5 },
-		RELEASE_POKEMON_MACRO,
-
-		// Fith row
-		{ DOWN,       5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO,
-		{ RIGHT,      5 },
-		RELEASE_POKEMON_MACRO
+		{ NOTHING, 100 },
+		{ RS_UP,   100 },
+		{ NOTHING, 100 },
+		{ LS_DOWN, 100 },
+		{ NOTHING, 100 },
+		{ LS_UP,   100 },
+		{ NOTHING, 100 },
+		{ RS_DOWN, 100 }
 	}
 };
 

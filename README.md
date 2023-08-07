@@ -1,16 +1,29 @@
 ## Switch Controller Emulator
 
-A switch pro controller emulator that uses a Teensy 2.0, a couple of buttons and a small display to allow for multiple repeatable command strings to be sent to a conected switch.
+A switch pro controller emulator that uses a Teensy 2.0.  The planned use case for this particular emulator is to avoid being kicked from Minecraft Realms for being AFK, allowing my auto farms to actually work.
 
-### TODO
+### Steps
 
-- To break repeating command sets with a button press, set `state` to `CLEANUP`
+1. Connect the Teensy to the switch dock
+2. Have the game running and dock the switch
+3. The game complains about each player needing a controller.  Press `A`.
+4. The switch controller settings page opens. Press `L+R` several times, followed by `A`.
+5. We should now be ready to AFK.
 
 ### Controller States
 
-1. `BREATHE`
-	: Wait for a command set to be selected then goto `PROCESS`
-2. `PROCESS`
-	: Run through the current command set then, if it does not repeat, go to `CLEANUP`, if it does, restart it
-3. `CLEANUP`
-	: Reset all state variables and go back to `BREATHE`
+This controller emulator has a few states that it goes through 
+
+1. `STANDBY`
+	: Wait a few seconds for the switch to connect to the dock
+2. `CONNECTING`
+	- Press `A`
+	- Wait a few seconds
+	- Spam `L+R` several times
+	- Press `A` again
+3. `AFK`
+	: Repeat a sequence of commands to beat the AFK detection
+
+### TODO
+
+- 
